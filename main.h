@@ -13,6 +13,8 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
+#define UN_ATTR __attribute__((unused))
+
 extern char **environ;
 
 /**
@@ -31,7 +33,8 @@ typedef struct dir_list
 
 void prompt(void);
 char *read_cmd(void);
-char **_strtok(char *str, char *delim);
+char **str_split(char *str, int *argc);
+void update_cmd(char **args, int index, char *arg);
 
 /** Environment **/
 
@@ -45,5 +48,22 @@ char *prg_search(char *name);
 
 /** Execute Functions **/
 int exe_cmd(char **args, char **env);
+void shell_exit(char **args);
+void env_print(void);
+void free_args(char **args);
+void free_args2(char ***args);
+
+/** UTILS **/
+int _atoi(const char *str);
+int _strncmp(const char *s1, char *s2, size_t n);
+char *_strncpy(char *dest, char *src, int n);
+char *_strcpy(char *dest, const char *src);
+size_t _strlen(const char *str);
+char *_memcpy(char *dest, char *src, unsigned int n);
+int _strcmp(char *s1, char *s2);
+char *_strcat(char *dest, char *src);
+char *_strdup(char *src);
+void cleanup(UN_ATTR char *cmd,
+UN_ATTR char **args, UN_ATTR char *prgpath);
 
 #endif

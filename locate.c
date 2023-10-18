@@ -9,21 +9,22 @@
 dir_l *get_dir_path(char *path)
 {
 	int i;
-	char **dir;
+	char *dir;
 	dir_l *head = NULL;
 
-	dir = _strtok(path, ":");
+	dir = strtok(path, ":");
 	if (!dir)
 		return (NULL);
 
-	for (i = 0; dir[i]; i++)
+	for (i = 0; dir; i++)
 	{
-		if (add_node(&head, dir[i]) == NULL)
+		if (add_node(&head, dir) == NULL)
 		{
 			free_list(head);
 			free(dir);
 			return (NULL);
 		}
+		dir = strtok(NULL, ":");
 	}
 	free(dir);
 
@@ -54,20 +55,23 @@ char *file_search(dir_l *head, char *name)
 {
 	char *f = NULL;
 	int file_l = 0, dir_l = 0;
-	int name_l = strlen(name);
+	int name_l = _strlen(name);
+
+	if (head == NULL || name == NULL)
+		return (NULL);
 
 	while (head != NULL)
 	{
-		dir_l = strlen(head->dir_path);
+		dir_l = _strlen(head->dir_path);
 		file_l = dir_l + name_l + 2;
 		f = malloc(sizeof(*f) * file_l);
 
 		if (!f)
 			return (NULL);
 
-		memcpy(f, head->dir_path, dir_l);
-		memcpy(f + dir_l, "/", 1);
-		memcpy(f + dir_l + 1, name, name_l);
+		_memcpy(f, head->dir_path, dir_l);
+		_memcpy(f + dir_l, "/", 1);
+		_memcpy(f + dir_l + 1, name, name_l);
 		f[file_l - 1] = '\0';
 
 		if (isPrgPath(f))
@@ -98,10 +102,10 @@ char *prg_search(char *name)
 	if (isPrgPath(name))
 	{
 		free(path);
-		return (strdup(name));
+		return (_strdup(name));
 	}
 
-	get_dir_path(path);
+	head = get_dir_path(path);
 	prg_path = file_search(head, name);
 
 	if (prg_path == NULL)

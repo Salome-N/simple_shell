@@ -28,12 +28,6 @@ char *read_cmd(void)
 
 	if (read_b == -1)
 	{
-		if (read_b == EOF)
-		{
-			free(cmd);
-			return (NULL);
-		}
-		perror("Readcmd");
 		free(cmd);
 		return (NULL);
 	}
@@ -44,4 +38,21 @@ char *read_cmd(void)
 	fflush(stdin);
 
 	return (cmd);
+}
+
+/**
+* update_cmd - Updates a commmand arg
+* @args: ptr to the argument array
+* @index: index of the token command
+* @arg: vslue of update argument
+* Return: void
+*/
+
+void update_cmd(char **args, int index, char *arg)
+{
+	if (!args || !(*args) || !arg || index < 0)
+		return;
+	free(args[index]);
+	args[index] = NULL;
+	args[index] = _strdup(arg);
 }

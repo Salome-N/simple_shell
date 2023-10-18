@@ -8,14 +8,14 @@
 
 char *_getenv(char *name)
 {
-	int i = 0, l = strlen(name);
+	int i = 0, l = _strlen(name);
 	char *p = NULL;
 
 	while (environ[i] != NULL)
 	{
-		if (strncmp(name, environ[i], l) == 0)
+		if (_strncmp(name, environ[i], l) == 0)
 		{
-			p = strdup(environ[i] + l + 1);
+			p = _strdup(environ[i] + l + 1);
 			return (p);
 		}
 		i++;

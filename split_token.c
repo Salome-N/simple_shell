@@ -1,100 +1,53 @@
 #include "main.h"
 
-int tok_len(char *str, char *delim);
-int count_tok(char *str, char *delim);
+#define MAX_TOKENS 100
+#define DELIMS " \t\r\n"
 
 /**
-* tok_len - counts the length of a token
-* @str: string that contains tokens
-* @delim: delimiter that separates tokens in str
-* Return: token size
+* str_split - a function that tokenizes input to the shell
+* @str: input string with command and arguments
+* @argc: counts the number of arguments
+* Return: toks
 */
 
-int tok_len(char *str, char *delim)
+char **str_split(char *str, int *argc)
 {
-	int i = 0, l = 0;
+	char **toks = malloc(MAX_TOKENS * sizeof(char *));
+	char *token;
+	int token_position = 0;
 
-	while (*(str + i) && *(str + i) != *delim)
+	if (toks == NULL)
 	{
-		l++;
-		i++;
+		perror("split string: failed to allocate memory for toks");
+		exit(EXIT_FAILURE);
 	}
-
-	return (l);
-}
-
-/**
-* count_tok - counts no. of tokens int a string
-* @str: string that cointains tokens
-* @delim: delimiter that separates the tokens in str
-* Return: no. of tokens in str
-*/
-
-int count_tok(char *str, char *delim)
-{
-	int i, tok = 0, l = 0;
-
-	for (i = 0; *(str + i); i++)
-		l++;
-
-	for (i = 0; i < l; i++)
+	token = strtok(str, DELIMS);
+	while (token != NULL)
 	{
-		if (*(str + i) != *delim)
+		if (token_position >= MAX_TOKENS)
 		{
-			tok++;
-			i += tok_len(str + i, delim);
+			perror("split_string: too many toks, limit is 100");
+			exit(EXIT_FAILURE);
 		}
-	}
-
-	return (tok);
-}
-
-/**
-* _strtok - splits string to tokens using a delimitor
-* @str: string to be split into tokens
-* @delim: delimiter that separates the tokens in str
-* Return: pointer to the tokens
-*/
-
-char **_strtok(char *str, char *delim)
-{
-	char **ptr;
-	int i = 0, tok, let, t, l;
-
-	tok = count_tok(str, delim);
-	if (tok == 0)
-		return (NULL);
-
-	ptr = malloc(sizeof(char *) * (tok + 2));
-	if (!ptr)
-		return (NULL);
-
-	for (t = 0; t < tok; t++)
-	{
-		while (str[i] == *delim)
-			i++;
-
-		let = tok_len(str + i, delim);
-
-		ptr[t] = malloc(sizeof(char) * (let + 1));
-		if (!ptr[t])
+		if (token[0] == '"' && token[_strlen(token) - 1] == '"')
 		{
-			for (i -= 1; i >= 0; i--)
-				free(ptr[i]);
-			free(ptr);
+			token[_strlen(token) - 1] = '\0';
+			token++;
+		}
+		toks[token_position] = _strdup(token);
+
+		if (!toks[token_position])
+		{
+			while (token_position > 0)
+				free(toks[--token_position]);
+			free(toks);
 			return (NULL);
 		}
-
-		for (l = 0; l < let; l++)
-		{
-			ptr[t][l] = str[i];
-			i++;
-		}
-
-		ptr[t][l] = '\0';
+		token_position++;
+		token = strtok(NULL, DELIMS);
 	}
-	ptr[t] = NULL;
-	ptr[t + 1] = NULL;
+	toks[token_position] = NULL;
+	*argc = token_position;
 
-	return (ptr);
+	return (toks);
 }
